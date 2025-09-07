@@ -1,0 +1,29 @@
+name: My workflow example
+#the name of the workflow can be string, number or binary (true/false)
+
+# This is examples of dictionaries in YAML
+config:
+  version: 1.0
+  description: This is an example workflow configuration file.
+  path: /path/to/workflow
+  environment: staging
+  runs-on: windows-latest
+
+  steps:
+    - step1:
+        name: "Load Data"
+        type: "data_loading"
+        parameters: appendix, file_path, delimiter
+
+  colors:
+    - name: "red"
+    - hex: "#FF0000"
+    - green: "#00FF00"
+    - blue: "#0000FF"
+    - primary: "#FF5733"
+    - secondary: "#33FF57"
+    - accent: "#3357FF"
+      labels:
+        - bright
+        - dark
+        - pastel
