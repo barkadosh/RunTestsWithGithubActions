@@ -1,3 +1,3 @@
 # RunTestsWithGithubActions
 
-This repository contains all examples and notes for the GitHub Actions course.gi 
+This repository contains all examples and notes for the GitHub Actions course.
