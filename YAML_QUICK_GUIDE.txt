@@ -1,0 +1,415 @@
+# YAML QUICK GUIDE
+
+1. Basic Syntax
+
+---
+
+Key-value pairs:
+name: Bar
+age: 30
+
+Nested (indent with spaces, never tabs):
+person:
+name: Bar
+job: QA Engineer
+skills:
+- Python
+- Selenium
+- Appium
+
+Lists:
+fruits:
+
+* apple
+* banana
+* orange
+
+Inline list or map:
+fruits: [apple, banana, orange]
+person: {name: Bar, job: QA Engineer}
+
+2. Comments
+
+---
+
+# This is a comment
+
+name: Bar  # Inline comment
+
+3. Data Types
+
+---
+
+string: "hello world"
+integer: 42
+float: 3.14
+boolean_true: true
+boolean_false: false
+null_value: null
+
+4. Anchors & Aliases (reuse blocks)
+
+---
+
+default: &base
+retry: 3
+timeout: 30
+
+prod:
+<<: *base
+url: "[https://prod.example.com](https://prod.example.com)"
+
+dev:
+<<: *base
+url: "[https://dev.example.com](https://dev.example.com)"
+
+5. Multi-line Strings
+
+---
+
+message: |
+This is a multi-line string.
+Newlines are preserved.
+
+short_message: >
+This is folded text.
+Newlines become spaces.
+
+6. Example (GitHub Actions workflow)
+
+---
+
+name: CI
+
+on:
+push:
+branches: [ main ]
+
+jobs:
+test:
+runs-on: ubuntu-latest
+steps:
+- uses: actions/checkout@v4
+- name: Install dependencies
+run: pip install -r requirements.txt
+- name: Run tests
+run: pytest --maxfail=1 --disable-warnings -v
+
+7. Common Rules
+
+---
+
+* Indentation: 2 spaces per level (no tabs)
+* One document per file (multiple allowed with ---)
+* Keys must be unique at each level
+* Strings with special characters or : must be quoted
+
+8. Python YAML Usage
+
+---
+
+Python uses the `PyYAML` library to read and write YAML files.
+
+**Install:**
+
+```bash
+pip install pyyaml
+```
+
+**Read YAML:**
+
+```python
+import yaml
+
+with open('config.yaml', 'r') as f:
+    data = yaml.safe_load(f)
+
+print(data['name'])
+```
+
+**Write YAML:**
+
+```python
+import yaml
+
+data = {
+    'name': 'Bar',
+    'languages': ['Python', 'C#'],
+    'experience': 5
+}
+
+with open('output.yaml', 'w') as f:
+    yaml.dump(data, f, default_flow_style=False)
+```
+
+**Preserve key order:**
+
+```python
+yaml.dump(data, f, sort_keys=False)
+```
+
+**Load multiple documents:**
+
+```python
+with open('multi.yaml', 'r') as f:
+    for doc in yaml.safe_load_all(f):
+        print(doc)
+```
+
+**Example YAML (config.yaml):**
+
+```yaml
+browser: chrome
+url: https://test.example.com
+credentials:
+  username: bar
+  password: secret
+```
+
+**Example Python reader:**
+
+```python
+config = yaml.safe_load(open('config.yaml'))
+print(config['credentials']['username'])
+```
+
+9. YAML Error Handling and Validation
+
+---
+
+When loading YAML, errors can occur from syntax issues or invalid structures.
+
+**Common Errors:**
+
+* `yaml.YAMLError`: generic YAML parsing issue.
+* `yaml.scanner.ScannerError`: bad indentation or unexpected characters.
+* `yaml.parser.ParserError`: invalid structure or missing key separator.
+
+**Handle safely:**
+
+```python
+import yaml
+
+try:
+    with open('config.yaml', 'r') as f:
+        config = yaml.safe_load(f)
+except yaml.YAMLError as e:
+    print(f"YAML error: {e}")
+```
+
+**Validate required keys:**
+
+```python
+def validate_config(config):
+    required = ['browser', 'url', 'credentials']
+    for key in required:
+        if key not in config:
+            raise ValueError(f"Missing key: {key}")
+
+try:
+    validate_config(config)
+except ValueError as e:
+    print(e)
+```
+
+**Schema validation with external library:**
+
+```bash
+pip install yamale
+```
+
+**Example schema.yaml:**
+
+```yaml
+browser: str()
+url: str()
+credentials:
+  username: str()
+  password: str()
+```
+
+**Validate using Yamale:**
+
+```python
+import yamale
+
+schema = yamale.make_schema('schema.yaml')
+data = yamale.make_data('config.yaml')
+
+try:
+    yamale.validate(schema, data)
+    print('Validation passed')
+except yamale.YamaleError as e:
+    print(f'Validation failed: {e}')
+```
+
+10. Advanced YAML Structures
+
+---
+
+**References and merges, multiple documents, environment variables, aliases, and complex data types.**
+
+11. YAML in CI/CD Pipelines
+
+---
+
+### GitHub Actions Deep Explanation
+
+GitHub Actions uses YAML to define **automated workflows** that run on specific triggers.
+
+#### 1. Workflow File Location
+
+All workflows are stored under:
+
+```
+.github/workflows/
+```
+
+Example: `.github/workflows/ci.yml`
+
+#### 2. Main Structure
+
+```yaml
+name: CI Pipeline  # Workflow name
+
+on:                # Trigger events
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:           # Job name
+    runs-on: ubuntu-latest  # Runner environment
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest -v --disable-warnings --maxfail=1
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results/
+```
+
+#### 3. Triggers
+
+Workflows start based on events:
+
+```yaml
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 3 * * *'  # Every day at 3 AM UTC
+  workflow_dispatch:  # Manual trigger
+```
+
+#### 4. Environment Variables
+
+```yaml
+env:
+  PYTHONPATH: ./src
+  TEST_ENV: staging
+```
+
+#### 5. Multiple Jobs
+
+Jobs can run in parallel or sequentially.
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Building project"
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - run: echo "Running tests"
+```
+
+#### 6. Matrix Strategy
+
+Run tests across multiple environments.
+
+```yaml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.10, 3.11, 3.12]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pytest -v
+```
+
+#### 7. Secrets and Security
+
+Store credentials in repository **Settings → Secrets and Variables**.
+
+```yaml
+env:
+  API_KEY: ${{ secrets.API_KEY }}
+```
+
+Never hardcode secrets inside the YAML file.
+
+#### 8. Caching Dependencies
+
+Speed up builds using cache:
+
+```yaml
+- name: Cache pip
+  uses: actions/cache@v4
+  with:
+    path: ~/.cache/pip
+    key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+    restore-keys: ${{ runner.os }}-pip-
+```
+
+#### 9. Artifacts and Reports
+
+Store test results, logs, or build outputs:
+
+```yaml
+- name: Upload test logs
+  uses: actions/upload-artifact@v4
+  with:
+    name: test-logs
+    path: run.log
+```
+
+#### 10. Notifications
+
+Integrate with Slack, Teams, or email.
+
+```yaml
+- name: Notify Slack
+  uses: slackapi/slack-github-action@v1.27.0
+  with:
+    payload: '{"text":"✅ Tests passed in CI"}'
+```
+
+GitHub Actions YAML enables full automation for CI/CD, test execution, linting, packaging, and deployment across environments.

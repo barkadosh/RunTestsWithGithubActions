@@ -1,0 +1,68 @@
+# Git + GitHub Commands (Git Bash)
+
+## Setup
+git config --global user.name "Your Name"
+git config --global user.email "your@email.com"
+git config --list
+
+## Starting a repo
+git init
+git clone <ssh-or-https-url>
+
+## Staging and committing
+git status
+git add <file>
+git add .
+git commit -m "message"
+git commit --amend
+
+## Branching
+git branch
+git branch <name>
+git checkout <name>
+git checkout -b <name>
+git merge <branch>
+git branch -d <name>
+
+## Remote
+git remote -v
+git remote add origin <url>
+git remote set-url origin <url>
+
+## Pushing and pulling
+git fetch
+git pull origin <branch>
+git push origin <branch>
+git push -u origin <branch>
+
+## Inspecting history
+git log
+git log --oneline --graph
+git show <commit>
+git diff
+git diff --staged
+
+## Undo / reset
+git restore <file>
+git reset HEAD <file>
+git reset --hard HEAD
+git revert <commit>
+
+## Stash
+git stash
+git stash list
+git stash pop
+git stash apply
+
+## Tags
+git tag
+git tag <name>
+git push origin <name>
+git push origin --tags
+
+## Cleanup
+git clean -fd
+
+# Common mistakes
+# Remember: there must be a space after 'git add'
+# Example: git add .   (NOT git add.)
