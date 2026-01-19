@@ -15,6 +15,7 @@ jobs:
       - name: "I will fail"
         run: |
           echo "I will fail this job"
-          exit 1  # Change to 'exit 1' to simulate failure
+          exit 0
+        # Change to 'exit 1' to simulate failure
       - name: "Say goodbye"
         run: echo "Goodbye!"
