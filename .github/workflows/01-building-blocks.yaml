@@ -13,6 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "I will fail"
-        run: exit 1
+        run: exit 0  # Change to 'exit 1' to simulate failure
       - name: "Say goodbye"
         run: echo "Goodbye!"
