@@ -1,5 +1,9 @@
-name: My workflow example
+#name: My workflow example
 #the name of the workflow can be string, number or binary (true/false)
+name:
+  environment: "production"
+# name.environment can be used to specify the environment for the workflow
+
 
 # This is examples of dictionaries in YAML
 config:
